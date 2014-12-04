@@ -44,7 +44,7 @@ var game = new Phaser.Game(width, height, Phaser.AUTO, 'gamescreen', { preload: 
 function preload() {
     game.load.tilemap('level',"assets/tilemap.json",null, Phaser.Tilemap.TILED_JSON);
     game.load.image('tiles',"assets/hyptosis_tile-art-batch-1.png");
-    game.load.spritesheet('player',"assets/brandonTile.png",14,21);
+    game.load.spritesheet('dude',"assets/brandonTile.png",14,21);
     game.load.image('bullet', 'assets/bullet.png');
 }
 
@@ -88,7 +88,7 @@ Dude = function (index) {
     
         console.log('Created bullet system');
     //player settings
-    this.dude = game.add.sprite(game.world.centerX, game.world.centerY, 'player');
+    this.dude = game.add.sprite(game.world.centerX, game.world.centerY, 'dude');
     this.dude.anchor.set(0.5);
 
      console.log('added collide');
@@ -99,6 +99,7 @@ Dude = function (index) {
     this.dude.body.bounce.setTo(0, 0);
     this.dude.x = 150;
     this.dude.y = 150;
+    this.dude.angle = 0;
     console.log('added id');
     game.physics.arcade.velocityFromRotation(this.dude.rotation, 0, this.dude.body.velocity);
 };
@@ -134,10 +135,6 @@ Dude.prototype.update = function() {
             this.currentSpeed -= 4;
         }
     }
-    if (this.fire == true)
-    {	
-		  this.fire({x:this.cursor.tx, y:this.cursor.ty});
-    }
 	
     if (this.currentSpeed > 0)
     {
@@ -152,40 +149,21 @@ Dude.prototype.update = function() {
 
 function create() {
 
-    //  We need to enable physics on the player
-    game.physics.startSystem(Phaser.Physics.P2JS);
-    game.physics.p2.setImpactEvents(true);
-
-
     //Tilemap and CollisionGroup
     map = game.add.tilemap('level');
     map.addTilesetImage('hyptosis_tile-art-batch-1','tiles');
-    var objectsCG = game.physics.p2.createCollisionGroup();
-    var wallsCG =  game.physics.p2.createCollisionGroup();
-    var playerCG = game.physics.p2.createCollisionGroup();
-
-    var walls = game.physics.p2.convertCollisionObjects(map, "object",true);
-    for(var wall in walls)
-    {
-	    walls[wall].setCollisionGroup(wallsCG);
-	    walls[wall].collides(playerCG);
-    }
     //  Our tiled scrolling background
     land = map.createLayer("background");
     land.fixedToCamera = true;
     layer2 = map.createLayer("layer2");
     layer2.resizeWorld();
     land.resizeWorld();
-    //map.setCollisionBetween(0, 897, true, 'object');
 
 	player = new Dude(myId);
 	playersList[myId] = player;
-  console.log(player);
+  console.log(player + 'created');
 	dude = player.dude;
-	dude.x=150;
-	dude.y=150;
 	bullets = dude.bullets;
-
 
     //camera system
     game.camera.follow(dude);
@@ -193,18 +171,13 @@ function create() {
 }
 
 function update() {
-    //land.tilePosition.x = -game.camera.x;
-   // land.tilePosition.y = -game.camera.y;
+
     for (var i in playersList) {
 		  if (!playersList[i]) continue;
 		  var curBullets = playersList[i].bullets;
 	  	var curDude = playersList[i].dude;
 		  for (var j in playersList) {
 			  if (!playersList[j]) continue;
-			  if (j!=i) {
-				  var targetPlayer = playersList[j].dude;
-				  //game.physics.arcade.overlap(curBullets, targetPlayer, bulletHitPlayer, null, this);
-		  	}
 			  if (playersList[j].alive) {
 				  playersList[j].update();
 			  }
@@ -214,47 +187,4 @@ function update() {
 function render() {
     //debug stuff
     game.debug.cameraInfo(game.camera, 32, 32);
-    game.debug.spriteCoords(player, 32, 500);
-}
-
-function movementSystem() {
-
-    player.body.velocity.x = 0;
-    player.body.velocity.y = 0;
-
-    //this disable the funny rotation of our little man
-    player.body.rotation = 0
-    if (cursors.left.isDown)
-    {
-        //  Move to the left
-        player.body.velocity.x -= velocity;
-
-        player.animations.play('left');
-    }
-    else if (cursors.right.isDown)
-    {
-        //  Move to the right
-        player.body.velocity.x += velocity;
-
-        player.animations.play('right');
-    }
-    else if (cursors.up.isDown)
-    {
-        //you got it
-        player.body.velocity.y -= velocity;
-
-        player.animations.play('up')
-    }
-    else if (cursors.down.isDown)
-    {
-        //and that too
-        player.body.velocity.y += velocity;
-
-        player.animations.play('down')
-    }
-    else
-    {
-        //  Stand still
-        player.animations.stop();
-    }
 }
