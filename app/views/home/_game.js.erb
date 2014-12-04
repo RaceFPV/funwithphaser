@@ -64,8 +64,8 @@ Dude = function (index) {
 		fire:false
 	}
 
-    var x = 100;
-    var y = 100;
+    var x = 150;
+    var y = 150;
 
     this.game = game;
     this.health = 30;
@@ -97,8 +97,8 @@ Dude = function (index) {
     this.dude.body.immovable = false;
     this.dude.body.collideWorldBounds = true;
     this.dude.body.bounce.setTo(0, 0);
-    this.dude.x = 100;
-    this.dude.y = 100;
+    this.dude.x = 150;
+    this.dude.y = 150;
     console.log('added id');
     game.physics.arcade.velocityFromRotation(this.dude.rotation, 0, this.dude.body.velocity);
 };
@@ -180,15 +180,16 @@ function create() {
 
 	player = new Dude(myId);
 	playersList[myId] = player;
+  console.log(player);
 	dude = player.dude;
-	dude.x=100;
-	dude.y=100;
+	dude.x=150;
+	dude.y=150;
 	bullets = dude.bullets;
 
 
     //camera system
     game.camera.follow(dude);
-    game.camera.focusOnXY(500, 500);
+    game.camera.focusOnXY(150, 150);
 }
 
 function update() {
