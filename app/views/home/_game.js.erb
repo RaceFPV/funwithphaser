@@ -22,11 +22,11 @@ var clientSetup = function() {
 
 var goleft = function(i) {
     playersList[i].dude.x -= 5;
-    //playersList[i].dude.animations.play('left');
+    playersList[i].dude.animations.play('left');
   }
 var goright = function(i) {
     playersList[i].dude.x += 5;
-    //playersList[i].dude.animations.play('right');
+    playersList[i].dude.animations.play('right');
   }
 var goup = function(i) {
     playersList[i].dude.y -= 5;
@@ -85,10 +85,14 @@ Dude = function (index) {
     this.fireRate = 500;
     this.nextFire = 0;
     this.alive = true;
-    
+
         console.log('Created bullet system');
     //player settings
     this.dude = game.add.sprite(game.world.centerX, game.world.centerY, 'dude');
+    this.dude.animations.add('down', [0, 1, 2], 10, true);
+    this.dude.animations.add('up', [3, 4, 5], 10, true);
+    this.dude.animations.add('right', [6, 7, 8], 10, true);
+    this.dude.animations.add('left', [9, 10, 11], 10, true);
     this.dude.anchor.set(0.5);
 
      console.log('added collide');
@@ -149,15 +153,31 @@ Dude.prototype.update = function() {
 
 function create() {
 
+    //  We need to enable physics on the player
+    game.physics.startSystem(Phaser.Physics.P2JS);
+    game.physics.p2.setImpactEvents(true);
+
+
     //Tilemap and CollisionGroup
     map = game.add.tilemap('level');
     map.addTilesetImage('hyptosis_tile-art-batch-1','tiles');
+    var objectsCG = game.physics.p2.createCollisionGroup();
+    var wallsCG =  game.physics.p2.createCollisionGroup();
+    var playerCG = game.physics.p2.createCollisionGroup();
+
+    var walls = game.physics.p2.convertCollisionObjects(map, "object",true);
+    for(var wall in walls)
+    {
+	    walls[wall].setCollisionGroup(wallsCG);
+	    walls[wall].collides(playerCG);
+    }
     //  Our tiled scrolling background
     land = map.createLayer("background");
     land.fixedToCamera = true;
     layer2 = map.createLayer("layer2");
     layer2.resizeWorld();
     land.resizeWorld();
+    //map.setCollisionBetween(0, 897, true, 'object');
 
 	player = new Dude(myId);
 	playersList[myId] = player;
@@ -168,6 +188,9 @@ function create() {
     //camera system
     game.camera.follow(dude);
     game.camera.focusOnXY(150, 150);
+
+    //controller system
+    cursors = game.input.keyboard.createCursorKeys();
 }
 
 function update() {
