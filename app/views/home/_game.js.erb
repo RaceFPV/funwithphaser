@@ -22,11 +22,11 @@ var clientSetup = function() {
 
 var goleft = function(i) {
     playersList[i].dude.x -= 5;
-    playersList[i].dude.animations.play('left');
+    //playersList[i].dude.animations.play('left');
   }
 var goright = function(i) {
     playersList[i].dude.x += 5;
-    playersList[i].dude.animations.play('right');
+    //playersList[i].dude.animations.play('right');
   }
 var goup = function(i) {
     playersList[i].dude.y -= 5;
@@ -69,7 +69,7 @@ Dude = function (index) {
 
     this.game = game;
     this.health = 30;
-    this.dude = dude;
+    this.player = player;
     this.points = 0;
     this.bullets = game.add.group();
     this.bullets.enableBody = true;
@@ -86,29 +86,20 @@ Dude = function (index) {
     this.nextFire = 0;
     this.alive = true;
     
+        console.log('Created bullet system');
     //player settings
     this.dude = game.add.sprite(game.world.centerX, game.world.centerY, 'player');
-    this.dude.x = 100;
-    this.dude.y = 100;
-    this.dude.animations.add('down', [0, 1, 2], 10, true);
-    this.dude.animations.add('up', [3, 4, 5], 10, true);
-    this.dude.animations.add('right', [6, 7, 8], 10, true);
-    this.dude.animations.add('left', [9, 10, 11], 10, true);
-
-    //this enable the physics system for our player sprite
-    game.physics.p2.enable(this.dude);
-
-    //add our player to its collision group
-
-    this.dude.body.collideWorldBounds = true;
-
-
     this.dude.anchor.set(0.5);
 
+     console.log('added collide');
     this.dude.id = index;
+    game.physics.enable(this.dude, Phaser.Physics.ARCADE);
     this.dude.body.immovable = false;
     this.dude.body.collideWorldBounds = true;
-
+    this.dude.body.bounce.setTo(0, 0);
+    this.dude.x = 100;
+    this.dude.y = 100;
+    console.log('added id');
     game.physics.arcade.velocityFromRotation(this.dude.rotation, 0, this.dude.body.velocity);
 };
 
@@ -118,6 +109,7 @@ var spawnPlayer = function(i) {
         console.log('SPAWN');
         var plyr = new Dude(i);
         playersList[i] = plyr;
+        console.log(i);
 }
 
 
@@ -149,7 +141,7 @@ Dude.prototype.update = function() {
 	
     if (this.currentSpeed > 0)
     {
-        game.physics.arcade.velocityFromRotation(this.dude.rotation, this.currentSpeed, this.dude.body.velocity);
+      game.physics.arcade.velocityFromRotation(this.dude.rotation, this.currentSpeed, this.dude.body.velocity);
     }	
 	else
 	{
