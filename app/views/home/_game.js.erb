@@ -21,19 +21,19 @@ var clientSetup = function() {
 }
 
 var goleft = function(i) {
-    playersList[i].dude.x -= 5;
+    playersList[i].dude.body.velocity.x -= 100;
     playersList[i].dude.animations.play('left');
   }
 var goright = function(i) {
-    playersList[i].dude.x += 5;
+    playersList[i].dude.body.velocity.x += 100;
     playersList[i].dude.animations.play('right');
   }
 var goup = function(i) {
-    playersList[i].dude.y -= 5;
+    playersList[i].dude.body.velocity.y -= 100
     playersList[i].dude.animations.play('up')
   }
 var godown = function(i) {
-    playersList[i].dude.y += 5;
+    playersList[i].dude.body.velocity.y += 100;
     playersList[i].dude.animations.play('down')
   }
 
@@ -71,6 +71,7 @@ Dude = function (index) {
     this.health = 30;
     this.player = player;
     this.points = 0;
+    /*
     this.bullets = game.add.group();
     this.bullets.enableBody = true;
     this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -79,14 +80,16 @@ Dude = function (index) {
     this.bullets.setAll('anchor.y', 0.5);
     this.bullets.setAll('outOfBoundsKill', true);
     this.bullets.setAll('checkWorldBounds', true);	
+
 	
 	
 	this.currentSpeed =0;
     this.fireRate = 500;
     this.nextFire = 0;
+    */
     this.alive = true;
 
-        console.log('Created bullet system');
+    console.log('Created bullet system');
     //player settings
     this.dude = game.add.sprite(game.world.centerX, game.world.centerY, 'dude');
     this.dude.animations.add('down', [0, 1, 2], 10, true);
@@ -95,17 +98,21 @@ Dude = function (index) {
     this.dude.animations.add('left', [9, 10, 11], 10, true);
     this.dude.anchor.set(0.5);
 
-     console.log('added collide');
+    console.log('added collide');
     this.dude.id = index;
-    game.physics.enable(this.dude, Phaser.Physics.ARCADE);
-    this.dude.body.immovable = false;
+    //game.physics.enable(this.dude, Phaser.Physics.ARCADE);
+    game.physics.p2.enable(this.dude);
+    this.dude.body.setCollisionGroup(playerCG);
+    this.dude.body.collides(wallsCG);
+
+    //this.dude.body.immovable = false;
     this.dude.body.collideWorldBounds = true;
     this.dude.body.bounce.setTo(0, 0);
     this.dude.x = 150;
     this.dude.y = 150;
     this.dude.angle = 0;
     console.log('added id');
-    game.physics.arcade.velocityFromRotation(this.dude.rotation, 0, this.dude.body.velocity);
+    //game.physics.arcade.velocityFromRotation(this.dude.rotation, 0, this.dude.body.velocity);
 };
 
 
@@ -142,11 +149,11 @@ Dude.prototype.update = function() {
 	
     if (this.currentSpeed > 0)
     {
-      game.physics.arcade.velocityFromRotation(this.dude.rotation, this.currentSpeed, this.dude.body.velocity);
+      //game.physics.arcade.velocityFromRotation(this.dude.rotation, this.currentSpeed, this.dude.body.velocity);
     }	
 	else
 	{
-		game.physics.arcade.velocityFromRotation(this.dude.rotation, 0, this.dude.body.velocity);
+		//game.physics.arcade.velocityFromRotation(this.dude.rotation, 0, this.dude.body.velocity);
 	}
 };
 
@@ -181,9 +188,9 @@ function create() {
 
 	player = new Dude(myId);
 	playersList[myId] = player;
-  console.log(player + 'created');
+    console.log(player + 'created');
 	dude = player.dude;
-	bullets = dude.bullets;
+	//bullets = dude.bullets;
 
     //camera system
     game.camera.follow(dude);
@@ -209,5 +216,5 @@ function update() {
   }
 function render() {
     //debug stuff
-    game.debug.cameraInfo(game.camera, 32, 32);
+    //game.debug.cameraInfo(game.camera, 32, 32);
 }
